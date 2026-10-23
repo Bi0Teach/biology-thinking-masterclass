@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Реакция организма на физическую нагрузку</title>
+<style>
+:root{
+  --bg:#f7f8f4;
+  --card:#ffffff;
+  --text:#203c34;
+  --muted:#6d7f77;
+  --line:#d8e2dc;
+  --accent:#4b8767;
+  --accent2:#e6efe8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 18px 14px;box-shadow:0 3px 14px rgba(32,60,52,.05)}
+.kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-size:clamp(24px,4vw,38px);line-height:1.15;margin:8px 0 10px}
+.lead{margin:0;color:var(--muted);font-size:clamp(15px,2vw,18px)}
+.grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 3px 14px rgba(32,60,52,.04)}
+.card h2{font-size:20px;line-height:1.2;margin:0 0 10px}
+.small{color:var(--muted);font-size:14px}
+.answers{display:grid;gap:10px;margin-top:12px}
+.answer{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;text-align:left;font-size:15px;color:var(--text);cursor:pointer}
+.answer.active{border-color:var(--accent);background:var(--accent2)}
+.answer.good{border-color:var(--accent);background:var(--accent2)}
+.answer.bad{border-color:#d9c8c8;background:#fbf5f5}
+.feedback{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--accent2);font-size:15px}
+.feedback.show{display:block}
+.scene{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media (min-width:860px){.scene{grid-template-columns:280px 1fr}}
+.figureBox{border:1px solid var(--line);border-radius:16px;padding:10px;background:#fbfcfa}
+.states{display:flex;gap:8px;justify-content:space-between;margin-top:8px}
+.stateChip{flex:1;border-radius:12px;padding:8px 6px;text-align:center;font-size:13px;background:#eef4ef;color:var(--muted)}
+.stateChip.active{background:var(--accent2);color:var(--text);font-weight:700;border:1px solid #c9d9cf}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.metric{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff}
+.metric .label{font-size:13px;color:var(--muted);margin-bottom:6px}
+.metric .value{font-size:clamp(26px,5vw,34px);font-weight:700;line-height:1}
+.metric .unit{font-size:12px;color:var(--muted)}
+.rangeWrap{margin-top:12px;border:1px solid var(--line);border-radius:16px;padding:12px;background:#fbfcfa}
+.rangeHead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px;font-size:15px}
+.rangeBtns{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
+.miniBtn,.primary,.secondary{appearance:none;border:none;border-radius:12px;padding:11px 12px;font-size:14px;cursor:pointer}
+.miniBtn{background:#edf2ee;color:var(--text)}
+.miniBtn.active{background:var(--accent);color:#fff}
+input[type=range]{width:100%;accent-color:var(--accent);height:32px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.primary{background:var(--accent);color:#fff}
+.secondary{background:#edf2ee;color:var(--text)}
+.graphBox{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;margin-top:12px}
+svg{max-width:100%;display:block;height:auto}
+.note{margin-top:10px;color:var(--muted);font-size:13px}
+.errorStmt{font-size:17px;background:#fbfcfa;border:1px solid var(--line);border-radius:16px;padding:14px}
+.teacherOptions{display:grid;gap:10px;margin-top:12px}
+.goodMark{font-weight:700;color:var(--accent)}
+.footerSpace{height:10px}
+.stickyControl{position:sticky;bottom:8px;z-index:2;background:rgba(247,248,244,.94);backdrop-filter: blur(6px);padding-top:8px}
+@media (max-width:640px){
+  .wrap{padding:12px}
+  .card{padding:14px}
+  .metrics{grid-template-columns:1fr}
+  .rangeBtns{grid-template-columns:repeat(5, minmax(0,1fr));}
+  .miniBtn{padding:10px 6px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="kicker">Биология: включи мышление!</div>
+    <h1>Реакция организма человека на физическую нагрузку</h1>
+    <p class="lead">Мини-интерактив для практической части мастер-класса: прогноз → исследование → поиск ошибки → позиция учителя.</p>
+  </section>
+
+  <div class="grid">
+    <section class="card" id="step1">
+      <h2>1. Сделайте прогноз</h2>
+      <div class="small">Как изменятся частота дыхания и пульс при переходе от состояния покоя к бегу?</div>
+      <div class="answers" id="predictAnswers">
+        <button class="answer" data-correct="false">А. Существенно изменится только пульс, а частота дыхания останется почти прежней.</button>
+        <button class="answer" data-correct="true">Б. И частота дыхания, и пульс увеличатся по мере роста нагрузки.</button>
+        <button class="answer" data-correct="false">В. И частота дыхания, и пульс будут уменьшаться.</button>
+      </div>
+      <div class="feedback" id="predictFeedback"></div>
+    </section>
+
+    <section class="card" id="step2">
+      <h2>2. Исследуйте изменение показателей</h2>
+      <div class="small">Изменяйте уровень физической нагрузки и наблюдайте, как реагирует организм.</div>
+
+      <div class="scene">
+        <div class="figureBox">
+          <svg viewBox="0 0 220 250" aria-label="Схематичное изображение человека">
+            <rect x="20" y="190" width="180" height="22" rx="10" fill="#eef4ef"/>
+            <circle id="personHead" cx="110" cy="46" r="18" fill="#d9e9de" stroke="#4b8767" stroke-width="2"/>
+            <path id="personBody" d="M110 66 L110 120 M85 92 L110 84 L135 92 M96 120 L88 164 M124 120 L134 164" fill="none" stroke="#4b8767" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="110" y="236" text-anchor="middle" font-size="14" fill="#6d7f77">Состояние человека</text>
+          </svg>
+          <div class="states">
+            <div class="stateChip active" id="chipRest">Покой</div>
+            <div class="stateChip" id="chipWalk">Ходьба</div>
+            <div class="stateChip" id="chipRun">Бег</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="metrics">
+            <div class="metric">
+              <div class="label">Частота дыхания</div>
+              <div class="value" id="breathValue">16</div>
+              <div class="unit">движений/мин</div>
+            </div>
+            <div class="metric">
+              <div class="label">Пульс</div>
+              <div class="value" id="pulseValue">72</div>
+              <div class="unit">уд/мин</div>
+            </div>
+            <div class="metric">
+              <div class="label">Потребность в O₂</div>
+              <div class="value" id="oxyValue">1.0</div>
+              <div class="unit">усл. ед.</div>
+            </div>
+          </div>
+
+          <div class="stickyControl">
+            <div class="rangeWrap">
+              <div class="rangeHead">
+                <strong>Уровень физической нагрузки</strong>
+                <span><strong id="loadOut">0</strong>%</span>
+              </div>
+              <input id="loadRange" type="range" min="0" max="100" step="1" value="0" />
+              <div class="rangeBtns">
+                <button class="miniBtn active" data-load="0">0%</button>
+                <button class="miniBtn" data-load="25">25%</button>
+                <button class="miniBtn" data-load="50">50%</button>
+                <button class="miniBtn" data-load="75">75%</button>
+                <button class="miniBtn" data-load="100">100%</button>
+              </div>
+              <div class="actions">
+                <button class="primary" id="demoBtn">Показать изменение</button>
+                <button class="secondary" id="resetBtn">Сбросить</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="graphBox">
+            <strong>Как меняются показатели при увеличении нагрузки</strong>
+            <svg viewBox="0 0 520 230" aria-label="График зависимости показателей от нагрузки">
+              <line x1="46" y1="186" x2="500" y2="186" stroke="#9bb3a8" stroke-width="1.5"/>
+              <line x1="46" y1="20" x2="46" y2="186" stroke="#9bb3a8" stroke-width="1.5"/>
+              <text x="272" y="220" text-anchor="middle" font-size="12" fill="#6d7f77">Уровень нагрузки</text>
+              <text x="16" y="110" transform="rotate(-90 16 110)" text-anchor="middle" font-size="12" fill="#6d7f77">Условное значение</text>
+              <g stroke="#edf2ee" stroke-width="1">
+                <line x1="46" y1="145" x2="500" y2="145"/>
+                <line x1="46" y1="104" x2="500" y2="104"/>
+                <line x1="46" y1="63" x2="500" y2="63"/>
+              </g>
+              <path d="M46 170 Q110 155 160 134 T280 92 T380 62 T500 44" fill="none" stroke="#4b8767" stroke-width="4" stroke-linecap="round"/>
+              <path d="M46 172 Q110 164 160 152 T280 128 T380 98 T500 72" fill="none" stroke="#89a991" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round"/>
+              <circle id="graphPointMain" cx="46" cy="170" r="6" fill="#4b8767"/>
+              <circle id="graphPointPulse" cx="46" cy="172" r="5" fill="#89a991"/>
+              <text x="430" y="38" font-size="12" fill="#4b8767">частота дыхания</text>
+              <text x="408" y="88" font-size="12" fill="#89a991">пульс (условная линия)</text>
+            </svg>
+            <div class="note" id="observation">В покое показатели минимальны. Попробуйте увеличить нагрузку.</div>
+          </div>
+        </div>
+      </div>
+      <div class="note">Учебная модель: значения условные, но отражают общую закономерность — при увеличении нагрузки учащаются дыхание и сердечные сокращения.</div>
+    </section>
+
+    <section class="card" id="step3">
+      <h2>3. Найдите биологическую ошибку</h2>
+      <div class="errorStmt">«При физической нагрузке дыхание учащается, потому что лёгкие начинают вырабатывать больше кислорода».</div>
+      <div class="answers" id="errorAnswers">
+        <button class="answer" data-correct="true">Ошибка в том, что лёгкие не вырабатывают кислород. Они обеспечивают газообмен между воздухом и кровью.</button>
+        <button class="answer" data-correct="false">Ошибка в том, что при нагрузке дыхание должно замедляться.</button>
+        <button class="answer" data-correct="false">Ошибка в том, что при нагрузке пульс никак не связан с дыханием.</button>
+      </div>
+      <div class="feedback" id="errorFeedback"></div>
+    </section>
+
+    <section class="card" id="step4">
+      <h2>4. Теперь вы — преподаватель</h2>
+      <div class="small">Какой вопрос лучше проверит понимание ученика после выполнения интерактивного задания?</div>
+      <div class="teacherOptions" id="teacherAnswers">
+        <button class="answer" data-correct="false">А. Какую частоту пульса показывает модель при высокой нагрузке?</button>
+        <button class="answer" data-correct="false">Б. Что такое дыхание?</button>
+        <button class="answer" data-correct="true">В. Почему после прекращения бега дыхание не сразу возвращается к частоте покоя?</button>
+      </div>
+      <div class="feedback" id="teacherFeedback"></div>
+    </section>
+  </div>
+  <div class="footerSpace"></div>
+</div>
+
+<script>
+(function(){
+  const loadRange = document.getElementById('loadRange');
+  const loadOut = document.getElementById('loadOut');
+  const breathValue = document.getElementById('breathValue');
+  const pulseValue = document.getElementById('pulseValue');
+  const oxyValue = document.getElementById('oxyValue');
+  const observation = document.getElementById('observation');
+  const pointMain = document.getElementById('graphPointMain');
+  const pointPulse = document.getElementById('graphPointPulse');
+  const buttons = Array.from(document.querySelectorAll('.miniBtn'));
+  const chips = {
+    rest: document.getElementById('chipRest'),
+    walk: document.getElementById('chipWalk'),
+    run: document.getElementById('chipRun')
+  };
+  function breath(load){ return Math.round(16 + 20*Math.pow(load/100,0.9)); }
+  function pulse(load){ return Math.round(72 + 108*Math.pow(load/100,0.95)); }
+  function oxy(load){ return (1 + 7*Math.pow(load/100,1.05)).toFixed(1); }
+  function x(load){ return 46 + (454*load/100); }
+  function yBreath(load){ return 170 - 126*Math.pow(load/100,0.72); }
+  function yPulse(load){ return 172 - 100*Math.pow(load/100,0.85); }
+  function setState(load){
+    Object.values(chips).forEach(c=>c.classList.remove('active'));
+    if(load < 20) chips.rest.classList.add('active');
+    else if(load < 65) chips.walk.classList.add('active');
+    else chips.run.classList.add('active');
+  }
+  function setObs(load){
+    if(load===0) observation.textContent='В покое показатели минимальны. Попробуйте увеличить нагрузку.';
+    else if(load<35) observation.textContent='Начальная нагрузка: дыхание и пульс начинают увеличиваться.';
+    else if(load<75) observation.textContent='Умеренная нагрузка: организму требуется больше кислорода, поэтому дыхание и пульс учащаются.';
+    else observation.textContent='Высокая нагрузка: дыхание и пульс значительно учащены, потребность тканей в кислороде возрастает.';
+  }
+  function update(load){
+    load = Number(load);
+    loadRange.value = load;
+    loadOut.textContent = load;
+    breathValue.textContent = breath(load);
+    pulseValue.textContent = pulse(load);
+    oxyValue.textContent = oxy(load);
+    pointMain.setAttribute('cx',x(load));
+    pointMain.setAttribute('cy',yBreath(load));
+    pointPulse.setAttribute('cx',x(load));
+    pointPulse.setAttribute('cy',yPulse(load));
+    buttons.forEach(btn=>btn.classList.toggle('active', Number(btn.dataset.load)===load));
+    setState(load); setObs(load);
+  }
+  loadRange.addEventListener('input', e=>update(e.target.value));
+  buttons.forEach(btn=>btn.addEventListener('click', ()=>update(btn.dataset.load)));
+  document.getElementById('resetBtn').addEventListener('click', ()=>update(0));
+  let timer = null;
+  document.getElementById('demoBtn').addEventListener('click', ()=>{
+    if(timer){ clearInterval(timer); timer=null; }
+    let v=0; update(v);
+    timer = setInterval(()=>{ v+=5; update(v); if(v>=100){ clearInterval(timer); timer=null; } }, 180);
+  });
+  function wireAnswers(groupId, feedbackId, goodText, badText){
+    const group = document.getElementById(groupId);
+    const feedback = document.getElementById(feedbackId);
+    group.querySelectorAll('.answer').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        group.querySelectorAll('.answer').forEach(b=>{ b.classList.remove('active','good','bad'); });
+        const ok = btn.dataset.correct === 'true';
+        btn.classList.add(ok ? 'good' : 'bad');
+        feedback.textContent = ok ? goodText : badText;
+        feedback.classList.add('show');
+      });
+    });
+  }
+  wireAnswers('predictAnswers','predictFeedback',
+    'Верно. При увеличении физической нагрузки учащаются и дыхание, и пульс: работающим мышцам нужно больше кислорода и быстрее удалять углекислый газ.',
+    'Не совсем так. При повышении физической нагрузки и дыхание, и пульс обычно увеличиваются, потому что возрастает потребность тканей в кислороде.');
+  wireAnswers('errorAnswers','errorFeedback',
+    'Правильно. Лёгкие не производят кислород, а обеспечивают газообмен. Дыхание учащается, потому что организму нужно больше кислорода и быстрее удалять углекислый газ.',
+    'Подумайте ещё. Главная ошибка связана с функцией лёгких: они не вырабатывают кислород, а обеспечивают газообмен.');
+  wireAnswers('teacherAnswers','teacherFeedback',
+    'Верно. Этот вопрос требует объяснить физиологический процесс, а не просто считать значение с экрана или воспроизвести определение.',
+    'Этот вопрос проверяет либо внимание к показателям, либо воспроизведение определения. Для проверки понимания лучше попросить объяснить наблюдаемое явление.');
+  update(0);
+})();
+</script>
+</body>
+</html>
